@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <meta http-equiv="refresh" content="5" >
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script>
+        function display_c(){
+        var refresh=1000;
+        mytime=setTimeout('display_ct()',refresh)
+        }
+
+        function display_ct() {
+        var x = new Date()
+        var x1=x.toLocaleString()
+        document.getElementById('ct').innerHTML = x1;
+        tt=display_c();
+        }
+    </script>
+    <style>
+        .log {
+            padding: 100px;
+        }
+    </style>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand text-light">Cafed</a>
+        <form class="form-inline">
+          <button class="btn btn-outline-light my-2 my-sm-0" onclick="window.location = 'http://192.168.124.46/end'" type="button">logout</button>
+        </form>
+    </nav>
+
+    <div class="log">
+        <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Status</th>
+                <th scope="col">Jam</th>
+              </tr>
+            </thead>
+            {% for item in data %}
+            <tbody>
+            <tr>
+              <td>{{item[1]}}</td>
+              <td>{{item[2]}}</td>
+            </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>
