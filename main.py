@@ -32,7 +32,7 @@ def login():
 @app.route("/table")
 def table():
     if g.user:
-        return render_template("table.html", data=db.show_data(), host=host)
+        return render_template("table.html", data=db.show_data(), host=host, name=g.user)
     return redirect(url_for('login'))
 
 
