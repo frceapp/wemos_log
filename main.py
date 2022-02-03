@@ -49,7 +49,6 @@ def before_request():
 
     if 'user' in session:
         g.user = session['user']
-        print(g.user)
 
 @app.route('/end')
 def dropsession():
