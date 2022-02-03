@@ -26,5 +26,3 @@ def login(username, password):
     mycursor.execute(f"SELECT * FROM admin where username='{username}' and password='{password}'")
     myresult = mycursor.fetchall()
     return myresult
-
-print(login("nekomata", "2awfw"))
