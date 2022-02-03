@@ -14,7 +14,7 @@ def login():
         session.pop('user', None)
         data_login = db.login(rq.form['username'], rq.form['password'])
         if not data_login:
-            wrong = "login_salah.svg"
+            wrong = "login_salah.jpg"
             return render_template('login.html', data=wrong)
 
         user, password, role = data_login[0]
@@ -22,12 +22,12 @@ def login():
             session['user'] = rq.form['username']
             return redirect(url_for('table'))
         else:
-            wrong = "login_salah.svg"
+            wrong = "login_salah.jpg"
             return render_template('login.html', data=wrong)
         
             
 
-    return render_template('login.html', data="bg.svg")
+    return render_template('login.html', data="bg.jpg")
 
 @app.route("/table")
 def table():
