@@ -1,8 +1,9 @@
-import db, os
+import db, os, socket
 from flask import Flask, request as rq, render_template, session, redirect, url_for, g
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
+host = socket.gethostbyname(socket.gethostname())
 
 @app.route("/", methods=['GET', 'POST'])
 def login():
@@ -31,7 +32,7 @@ def login():
 @app.route("/table")
 def table():
     if g.user:
-        return render_template("table.html", data=db.show_data())
+        return render_template("table.html", data=db.show_data(), host=host)
     return redirect(url_for('login'))
 
 
@@ -58,4 +59,4 @@ def dropsession():
 
 if __name__ == "__main__":
     app.debug = True
-    app.run("0.0.0.0", port=80)
+    app.run('0.0.0.0', port=8080)
