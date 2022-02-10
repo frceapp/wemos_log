@@ -32,7 +32,8 @@ def login():
 @app.route("/table")
 def table():
     if g.user:
-        return render_template("table.html", data=db.show_data(), host=host, name=g.user)
+        end_sesion = url_for('dropsession')
+        return render_template("table.html", data=db.show_data(), host=host, name=g.user, end_sesion=end_sesion)
     return redirect(url_for('login'))
 
 
