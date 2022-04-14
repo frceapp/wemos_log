@@ -1,11 +1,13 @@
-from cmath import log
+import datetime
 import mysql.connector
 
+from datetime import datetime
+
 mydb = mysql.connector.connect(
-    host="localhost",
+	  host="localhost",
       user="root",
       password="123",
-      database="kelompok4"
+      database="aplikasi_db"
     )
 
 mycursor = mydb.cursor()
@@ -15,8 +17,9 @@ def show_data():
     myresult = mycursor.fetchall()
     return myresult
 
-def insert_data(val, time):
-    sql = f"INSERT INTO wemos_log (data, time) VALUES ({val}, {time})"
+def insert_data(val):
+    time = datetime.now().strftime("%H:%M")
+    sql = f'INSERT INTO wemos_log (data, time) VALUES ({val}, "{time}")'
     mycursor.execute(sql)
 
     mydb.commit()

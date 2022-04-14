@@ -1,9 +1,9 @@
-import db, os, socket
+import db, os, datetime
 from flask import Flask, request as rq, render_template, session, redirect, url_for, g
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-host = socket.gethostbyname(socket.gethostname())
 
 @app.route("/", methods=['GET', 'POST'])
 def login():
@@ -14,7 +14,7 @@ def login():
         session.pop('user', None)
         data_login = db.login(rq.form['username'], rq.form['password'])
         if not data_login:
-            wrong = "login_salah.jpg"
+            wrong = "login_salah.svg"
             return render_template('login.html', data=wrong)
 
         user, password, role = data_login[0]
@@ -22,26 +22,24 @@ def login():
             session['user'] = rq.form['username']
             return redirect(url_for('table'))
         else:
-            wrong = "login_salah.jpg"
+            wrong = "login_salah.svg"
             return render_template('login.html', data=wrong)
         
             
 
-    return render_template('login.html', data="bg.jpg")
+    return render_template('login.html', data="bg.svg")
 
 @app.route("/table")
 def table():
     if g.user:
-        end_sesion = url_for('dropsession')
-        return render_template("table.html", data=db.show_data(), host=host, name=g.user, end_sesion=end_sesion)
+        return render_template("table.html", data=db.show_data(), user=g.user)
     return redirect(url_for('login'))
 
 
 @app.route("/input_data")
 def input_data():
     data = rq.args.get('data')
-    time = rq.args.get('time')
-    x = db.insert_data(data, time)
+    x = db.insert_data(data)
     return x
 
 @app.before_request
@@ -50,6 +48,7 @@ def before_request():
 
     if 'user' in session:
         g.user = session['user']
+        print(g.user)
 
 @app.route('/end')
 def dropsession():
@@ -59,4 +58,4 @@ def dropsession():
 
 if __name__ == "__main__":
     app.debug = True
-    app.run("0.0.0.0", port=8080)
+    app.run("0.0.0.0", port=80)
