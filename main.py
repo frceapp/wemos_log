@@ -32,14 +32,15 @@ def login():
 @app.route("/table")
 def table():
     if g.user:
-        return render_template("table.html", data=db.show_data(), user=g.user)
+        return render_template("table.html", data=db.show_data(g.user), user=g.user)
     return redirect(url_for('login'))
 
 
 @app.route("/input_data")
 def input_data():
     data = rq.args.get('data')
-    x = db.insert_data(data)
+    user = rq.args.get('username')
+    x = db.insert_data(data, user)
     return x
 
 @app.before_request
