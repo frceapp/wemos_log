@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
-    <meta http-equiv="refresh" content="5" >
+    <!-- <meta http-equiv="refresh" content="5" > -->
+
     <link rel="icon" type="image/png" href="{{url_for('static', filename='icon.png')}}">
     <title>Cafed - {{ user }}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -19,27 +20,75 @@
         }
     </script>
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
         .log {
             padding: 100px;
         }
+        .borderless {
+          border: none;
+        }
     </style>
 <body>
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark sticky-top">
         <a class="navbar-brand" href="#">
           <img src="{{url_for('static', filename='logo.svg')}}" width="116" height="37" alt="">
         </a>
         <form class="form-inline">
-          <button class="btn btn-outline-light my-2 my-sm-0" onclick="window.location = 'http://10.30.30.139:8080/end'" type="button">{{ user }} <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+          <button class="btn btn-outline-light my-2 my-sm-0" onclick="window.location = 'end'" type="button">{{ user }} <i class="fa-solid fa-arrow-right-from-bracket"></i></button>
         </form>
     </nav>
 
     <div class="log">
+      <div class="row">
+        <div class="col-sm-6 border-3">
+          <div class="card ">
+            <div class="card-body text-dark rounded">
+              <h5 class="card-title">Set time for auto feed</h5>
+              <p class="card-text">Choose automatic feeding time for cats, don't fill in the time picker to not set the time</p>
+              <div class="alert alert-dark" role="alert">
+                {{ data_time }}
+              </div>
+              <form action="/table" method="post">
+                <div class="row">
+                  <div class="col-3">
+                    <input class="btn btn-light text-black border border-3" type="time" name="time" min="2018-W1" max="2018-W52" />
+                  </div>
+                  <div class="col-2">
+                    <button type="submit" class="btn btn-dark">Set Time</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 border border-3 rounded" data-aos="fade-up">
+          <div class="card borderless">
+            <div class="card-body text-dark">
+              <h5 class="card-title">Manually feed</h5>
+
+              <p class="card-text">Press the button for manual feeding via online, no need to bother pressing buttons on the device</p>
+              <div class="alert alert-dark invisible" role="alert">
+                h
+              </div>
+              <form action="/table" method="get">
+
+                <button type="submit" name="status" value="On" class="btn btn-dark">Feed now</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="log">
         <table class="table">
-            <thead class="thead-dark">
+            <thead class="thead-dark rounded">
               <tr>
                 <th scope="col">Status</th>
-                <th scope="col">Jam</th>
-                <th scope="col">Tanggal</th>
+                <th scope="col">Time</th>
+                <th scope="col">Date</th>
               </tr>
             </thead>
             {% for item in data %}
