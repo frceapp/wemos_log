@@ -1,12 +1,18 @@
 from threading import Thread
 import db, os, datetime, pytz
 import time
-from flask import Flask, request as rq, render_template, session, redirect, url_for, g
+from flask import Flask, request as rq, render_template, render_template_string, session, redirect, url_for, g
 from datetime import datetime
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-global statuson
+
+limiter = Limiter(
+    app,
+    key_func=get_remote_address
+)
 
 @app.route("/", methods=['GET', 'POST'])
 def login():
@@ -37,7 +43,7 @@ def login():
 @app.route("/table", methods=['GET', 'POST'])
 def table():
     if g.user:
-        x, y, z, data_time, a = db.show_time(g.user)[0]
+        data_time, a = db.show_time(g.user)[0]
         if rq.method == "POST":
             times = rq.form['time']
             print(len(times))
@@ -70,6 +76,7 @@ def input_data():
     return x
 
 @app.route("/status")
+@limiter.limit("1/second", override_defaults=False)
 def status():
     user = rq.args.get('username')
     x, status = db.show_status(user)
@@ -82,6 +89,19 @@ def before_request():
     if 'user' in session:
         g.user = session['user']
         print(g.user)
+
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return render_template_string(f'<img src="https://i.ytimg.com/vi/60A9WaeDMYU/mqdefault.jpg"> <h1>Pelan pelan bang >///<</h1> <p>{e}</P>')
+
+@app.errorhandler(500)
+def errorhandler(e):
+    return render_template_string(f'''<html style="background-image: url('https://pbs.twimg.com/media/FOOxKDAWYAsQlNP?format=jpg&name=large'); background-size: cover;background-repeat: no-repeat;background-position: center center;;"><title>500 Error</title><h1 style="font-size: 50px; color: white; text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black;display: flex;flex-direction: column;justify-content: center;align-items: center;text-align: center;min-height: 100vh;">Error code: 500<br>Something went wrong<p style="font-size: 20px;">{e}</p></h1></html>''')
+
+@app.errorhandler(404)
+def errorhandler(e):
+    return render_template_string(f'''<html style="background-image: url('https://c.tenor.com/Gv1cMkqev0wAAAAC/anime-confused.gif'); background-size: cover;background-repeat: no-repeat;background-position: center center;;"><title>404 Error</title><h1 style="font-size: 50px; color: white; text-shadow: 0 0 1px black, 0 0 1px black, 0 0 1px black, 0 0 1px black;display: flex;flex-direction: column;justify-content: center;align-items: center;text-align: center;min-height: 100vh;">Error code: 404<br>Page or file not found<p style="font-size: 20px;">{e}</p></h1></html>''')
+
 
 @app.route('/end')
 def dropsession():
@@ -96,11 +116,11 @@ def runner():
 def loop():
     while(True):
         for user in db.show_alluser():
-            x, y, z, data_time, a = db.show_time("".join(user))[0]
+            data_time, a = db.show_time("".join(user))[0]
             now = datetime.now(pytz.timezone("Asia/Jakarta"))
             times = now.strftime("%H:%M:%S")
             if data_time is not None:
-                if data_time+":01" == times:
+                if data_time+":20" == times:
                     print(f"user {''.join(user)}")
                     db.status_set("On", "".join(user))
                     time.sleep(5)
@@ -108,7 +128,7 @@ def loop():
         time.sleep(1)
 
 
-if __name__ == '__main__':
+def starter():
     server = Thread(target=runner)
     looping = Thread(target=loop)
     server.start()

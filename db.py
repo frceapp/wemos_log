@@ -1,14 +1,14 @@
-import datetime, pytz
+import datetime, pytz, os
 from multiprocessing.spawn import prepare
 import mysql.connector
 
 from datetime import datetime
 def db():
     return mysql.connector.connect(
-	  host="localhost",
-      user="root",
-      password="123",
-      database="aplikasi_db"
+	  host=os.getenv('HOST'),
+      user=os.getenv('USER'),
+      password=os.getenv('PASSWORD'),
+      database=os.getenv('DATABASE')
     )
 
 
@@ -55,10 +55,21 @@ def time_set(val, username):
 def show_time(user):
     mydb = db()
     mycursor = mydb.cursor(prepared=True,)
-    mycursor.execute(f"SELECT * FROM admin WHERE username=%s;", (user,))
+    mycursor.execute(f"SELECT time, status FROM admin WHERE username=%s;", (user,))
     myresult = mycursor.fetchall()
     mycursor.close()
     return myresult
+
+def time_set2(val, id):
+    mydb = db()
+    mycursor = mydb.cursor(prepared=True,)
+
+    sql = f'UPDATE admin SET time=%s WHERE discord=%s'
+    mycursor.execute(sql, (val, id,))
+    mycursor.close()
+
+    mydb.commit()
+    return sql
 
 def status_set(val, username):
     mydb = db()
@@ -66,6 +77,17 @@ def status_set(val, username):
 
     sql = f'UPDATE admin SET status=%s WHERE username=%s'
     mycursor.execute(sql, (val, username,))
+    mycursor.close()
+
+    mydb.commit()
+    return sql
+
+def status_set2(val, id):
+    mydb = db()
+    mycursor = mydb.cursor(prepared=True,)
+
+    sql = f'UPDATE admin SET status=%s WHERE discord=%s'
+    mycursor.execute(sql, (val, id,))
     mycursor.close()
 
     mydb.commit()
@@ -86,3 +108,50 @@ def show_alluser():
     myresult = mycursor.fetchall()
     mycursor.close()
     return myresult
+
+def show_user(user):
+    mydb = db()
+    mycursor = mydb.cursor(prepared=True,)
+    mycursor.execute(f"SELECT username FROM admin WHERE discord=%s;", (user,))
+    myresult = mycursor.fetchall()
+    mycursor.close()
+    return myresult
+
+def show_user2(user):
+    mydb = db()
+    mycursor = mydb.cursor(prepared=True,)
+    mycursor.execute(f"SELECT username FROM admin WHERE username=%s;", (user,))
+    myresult = mycursor.fetchall()
+    mycursor.close()
+    return myresult
+
+def register(username, password, id):
+    mydb = db()
+    mycursor = mydb.cursor(prepared=True,)
+    sql = f'INSERT INTO admin (username, password, discord) VALUES (%s, %s, %s)'
+    mycursor.execute(sql, (username, password, id))
+    mycursor.close()
+
+    mydb.commit()
+    return sql
+
+def set_cat_name(val, id):
+    mydb = db()
+    mycursor = mydb.cursor(prepared=True,)
+
+    sql = f'UPDATE admin SET cat_name=%s WHERE discord=%s'
+    mycursor.execute(sql, (val, id,))
+    mycursor.close()
+
+    mydb.commit()
+    return sql
+
+def show_cat_name(id):
+    mydb = db()
+    mycursor = mydb.cursor(prepared=True,)
+    mycursor.execute(f"SELECT cat_name FROM admin WHERE discord=%s;", (id,))
+    myresult = mycursor.fetchall()[0]
+    mycursor.close()
+    return myresult
+
+
